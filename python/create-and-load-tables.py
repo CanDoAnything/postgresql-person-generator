@@ -33,6 +33,9 @@ connection.commit()
 
 # batch insert
 
-print(person_generator.generate())
+maleNames = open(path.abspath(path.join(basepath,"..", "data",'first_names_male.csv'))).read().splitlines()
+
+for p in person_generator.generateMany(maleNames,maleNames,maleNames):
+    print(p)
 
 connection.close()
