@@ -34,8 +34,10 @@ connection.commit()
 # batch insert
 
 maleNames = open(path.abspath(path.join(basepath,"..", "data",'first_names_male.csv'))).read().splitlines()
+femaleNames = open(path.abspath(path.join(basepath,"..", "data",'first_names_female.csv'))).read().splitlines()
+lastNames = open(path.abspath(path.join(basepath,"..", "data",'last_names.csv'))).read().splitlines()
 
-for p in person_generator.generateMany(maleNames,maleNames,maleNames):
+for p in person_generator.generateMany(femaleNames,maleNames,lastNames,1000):
     print(p)
 
 connection.close()
