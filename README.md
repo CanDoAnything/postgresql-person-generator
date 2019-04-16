@@ -4,13 +4,10 @@ This repo is a demo of using various languages to connect to a postgreSQL databa
 
 ## Prerequisites
 
-### Required
-
 - Connection to a PostgreSQL database
 - Basic understanding of SQL
-
-### Recommended
-
+- First name and last name list
+  - I recommend downloading the three lists as csv at <https://www.census.gov/topics/population/genealogy/data/1990_census/1990_census_namefiles.html>
 - VSCode
   - Plugins
     - markdownlint (David Anson)

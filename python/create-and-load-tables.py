@@ -2,6 +2,7 @@ from os import path
 
 import json
 import psycopg2
+import person_generator
 
 basepath = path.dirname(__file__)
 try:
@@ -30,5 +31,8 @@ connection.commit()
 
 #seed the tables with data
 
+# batch insert
+
+print(person_generator.generate())
 
 connection.close()
