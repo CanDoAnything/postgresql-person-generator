@@ -1,6 +1,6 @@
-# postgresql-training
+# postgresql-person-generator
 
-This repo is a demo of using postgreSQL with both powershell and maybe python.
+This repo is a demo of using various languages to connect to a postgreSQL database and seed it with generated / synthetic data.
 
 ## Prerequisites
 
