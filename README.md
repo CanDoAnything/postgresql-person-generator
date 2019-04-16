@@ -16,3 +16,13 @@ This repo is a demo of using postgreSQL with both powershell and maybe python.
     - markdownlint (David Anson)
     - Markdown Preview Enhanced (Yiyi Wang)
     - PostgreSQL (Chris Kolkman)
+
+## Architecture
+
+### PowerShell
+
+The files in the scripts/PowerShell folder
+
+| File | Description |
+| --- | --- |
+| database_setup.ps1 | Runs the create database scripts |
