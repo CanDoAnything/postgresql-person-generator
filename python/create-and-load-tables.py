@@ -56,10 +56,14 @@ stateCodes = open(path.abspath(
 values = []
 
 
+quantity = 555000
 ssnStart =100101000
-ssnEnd = 100103000
+ssnEnd = ssnStart + quantity
 socialSecurityNumbers = list(range(ssnStart,ssnEnd))
-print('Creating the tables')
+print('Generating ' + str(ssnEnd - ssnStart) + " records...")
+
+insertBatchSize = 1000
+
 for p in person_generator.generate(socialSecurityNumbers, femaleNames, maleNames, lastNames, cityNames, streetSuffixes, stateCodes):
     values.append("('%s', '%s', '%s', '%s', '%s', '%s', '%s','%s', %d)" % (
                   p['ssn'],
@@ -71,11 +75,17 @@ for p in person_generator.generate(socialSecurityNumbers, femaleNames, maleNames
                   p['state'],
                   p['zip'],
                   p['netWorth']))
+    if (len(values) == insertBatchSize):
+        print("inserting " + str(insertBatchSize ))
+        insertSql = "INSERT INTO person (ssn, first_name, last_name, sex_code, street_address, city_name, state_code, zip, net_worth_amount) VALUES" + ",".join(values)
+        cur.execute(insertSql)
+        connection.commit()
+        values.clear()
 
-
-insertSql = "INSERT INTO person (ssn, first_name, last_name, sex_code, street_address, city_name, state_code, zip, net_worth_amount) VALUES" + ",".join(values)
-
-cur.execute(insertSql)
-connection.commit()
+if(len(values) > 0 ):
+    print("inserting " + str(len(values) ))
+    insertSql = "INSERT INTO person (ssn, first_name, last_name, sex_code, street_address, city_name, state_code, zip, net_worth_amount) VALUES" + ",".join(values)
+    cur.execute(insertSql)
+    connection.commit()
 
 connection.close()

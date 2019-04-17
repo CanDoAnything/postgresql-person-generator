@@ -33,15 +33,15 @@ def generate(socialSecurityNumbers, femaleFirstNames, maleFirstNames, lastNames,
         person['state'] = stateCodes[randint(0, len(stateCodes)-1)]
         person['zip'] = str(randint(10000, 99999))
 
-        wealthLevel = randint(0, 100)
-        if (wealthLevel < 70):
+        wealthLevel = randint(0, 10000)
+        if (wealthLevel < 9000):
             person['netWorth'] = randint(0, 50000)
-        elif (wealthLevel >= 70 and wealthLevel < 95):
+        elif (wealthLevel >= 9000 and wealthLevel < 9995):
             person['netWorth'] = randint(50000, 1000000)
-        elif (wealthLevel >= 95 and wealthLevel < 99):
-            person['netWorth'] = randint(1000000, 10000000)
+        elif (wealthLevel >= 9995 and wealthLevel < 9999):
+            person['netWorth'] = randint(100000, 10000000)
         else:
-            person['netWorth'] = randint(10000000, 10000000000)
+            person['netWorth'] = randint(1000000, 10000000000)
 
         people.append(person)
 
