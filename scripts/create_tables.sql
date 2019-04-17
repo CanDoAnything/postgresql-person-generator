@@ -1,5 +1,5 @@
 CREATE TABLE person(
-   ssn CHAR(11) NOT NULL PRIMARY KEY,
+   ssn CHAR(9) NOT NULL PRIMARY KEY,
   sex_code CHAR(1),
   first_name VARCHAR(128),
   last_name VARCHAR(128),

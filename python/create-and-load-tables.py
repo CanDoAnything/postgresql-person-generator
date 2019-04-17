@@ -47,9 +47,20 @@ lastNames = open(path.abspath(
 cityNames = open(path.abspath(
     path.join(basepath, "..", "data", 'city_names.csv'))).read().splitlines()
 
+streetSuffixes = open(path.abspath(
+    path.join(basepath, "..", "data", 'street_suffixes.csv'))).read().splitlines()
+
+stateCodes = open(path.abspath(
+    path.join(basepath, "..", "data", 'state_codes.csv'))).read().splitlines()
+
 values = []
 
-for p in person_generator.generate(femaleNames, maleNames, lastNames, cityNames, 10000):
+
+ssnStart =100101000
+ssnEnd = 100103000
+socialSecurityNumbers = list(range(ssnStart,ssnEnd))
+print('Creating the tables')
+for p in person_generator.generate(socialSecurityNumbers, femaleNames, maleNames, lastNames, cityNames, streetSuffixes, stateCodes):
     values.append("('%s', '%s', '%s', '%s', '%s', '%s', '%s','%s', %d)" % (
                   p['ssn'],
                   p['firstName'].replace("'", "''"),
