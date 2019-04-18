@@ -57,7 +57,7 @@ stateCodes = open(path.abspath(
 values = []
 
 
-quantity = 12345
+quantity = 500000
 ssnStart = 123456789
 ssnEnd = ssnStart + quantity
 socialSecurityNumbers = list(range(ssnStart, ssnEnd))

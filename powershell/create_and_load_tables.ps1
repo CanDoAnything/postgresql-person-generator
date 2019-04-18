@@ -40,7 +40,7 @@ $stateCodes = (Import-Csv ($PSScriptRoot + "\..\data\state_codes.csv") -Header "
 $streetSuffixes = (Import-Csv ($PSScriptRoot + "\..\data\street_suffixes.csv") -Header "Suffix").Suffix
 
 
-$quantity = 12345
+$quantity = 500000
 $ssnStart = 123456789
 $ssnEnd = $ssnStart + $quantity - 1
 $ssns = $ssnStart..$ssnEnd | ForEach-Object { "$_" }
