@@ -9,7 +9,8 @@ CREATE TABLE person(
   state_code CHAR(2),
   zip CHAR(5),
   net_worth_amount bigint,
-  generated_timestamp timestamp
+  generated_timestamp timestamp,
+  insert_timestamp timestamp default current_timestamp
 );
 CREATE TABLE address (
   ID INT PRIMARY KEY NOT NULL,

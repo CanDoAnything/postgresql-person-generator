@@ -56,8 +56,8 @@ stateCodes = open(path.abspath(
 values = []
 
 
-quantity = 555
-ssnStart =100101000
+quantity = 123456
+ssnStart =123456789
 ssnEnd = ssnStart + quantity
 socialSecurityNumbers = list(range(ssnStart,ssnEnd))
 print('Generating ' + str(ssnEnd - ssnStart) + " records...")

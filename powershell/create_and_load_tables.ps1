@@ -39,11 +39,12 @@ $cityNames = (Import-Csv ($PSScriptRoot + "\..\data\city_names.csv") -Header "Na
 $stateCodes = (Import-Csv ($PSScriptRoot + "\..\data\state_codes.csv") -Header "Code").Code
 $streetSuffixes = (Import-Csv ($PSScriptRoot + "\..\data\street_suffixes.csv") -Header "Suffix").Suffix
 
-$quantity = 10000
+
+$quantity = 123456
 $ssnStart = 123456789
 $ssnEnd = $ssnStart + $quantity - 1
 $ssns = $ssnStart..$ssnEnd | ForEach-Object { "$_" }
-
+write-host "Generating $($ssnEnd - $ssnStart+1) records..."
 $people = generate -socialSecurityNumbers $ssns -femaleFirstNames $femaleNames -maleFirstNames $maleNames -lastNames $lastNames -cityNames $cityNames -streetSuffixes $streetSuffixes -stateCodes $stateCodes
 
 $insertBatchSize = 1000

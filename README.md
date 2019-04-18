@@ -1,6 +1,26 @@
 # postgresql-person-generator
 
-This repo is a demo of using various languages to connect to a postgreSQL database and seed it with generated / synthetic data.
+This demo application creates sets up and populates a postgresql database using various programming languages.
+
+It loads the person table with random X number of random people with names from the census <https://www.census.gov/topics/population/genealogy/data/2010_surnames.html>.
+
+## Architecture
+
+The /data folder contains datasets used for random name generation. The /scripts folder has SQL and DDL.
+
+The general flow of the application is as follows:
+
+1. Creates person table (drops if exists)
+2. Loads a few files into variables for sample data
+3. Call the person generator and pass in the variables from the files
+4. Insert the people into the person table
+
+## Findings / Observations
+
+| Language/Framework | DBMS | Sample Size | Generate speed | Insert speed|
+| ---           | ---       | ---       | --- | --- |
+| PowerShell   | PostgreSQL 11.2 |   123456 |           |
+| Python 3.7   | PostgreSQL 11.2 |   123456 |
 
 ## Prerequisites
 
@@ -28,13 +48,14 @@ This repo is a demo of using various languages to connect to a postgreSQL databa
 
 1. Open VSCode
 2. Open the driver.ps1 file
-3. Run it by pressing F5
+3. Download and extract a few required DLLs from NuGet .nupkg files. (download, then rename the .nupkg to .zip and extract these files to the powershell folder)
+    - Npgsql.dll [(link)](https://www.nuget.org/packages/Npgsql/)
+    - System.Memory.dll [(link)](https://www.nuget.org/packages/System.Memory/)
+    - System.Runtime.CompilerServices.Unsafe.dll [(link)](https://www.nuget.org/packages/System.Runtime.CompilerServices.Unsafe/)
+    - System.Threading.Tasks.Extensions.dll [(link)](https://www.nuget.org/packages/System.Threading.Tasks.Extensions/)
+4. Run it by pressing F5
 
-## Architecture
 
-This demo application creates sets up and populates a postgresql database using various programming languages.
-
-It loads the person table with random X number of random people with names from the census <https://www.census.gov/topics/population/genealogy/data/2010_surnames.html>.
 
 ### Python
 
