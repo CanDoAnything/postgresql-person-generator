@@ -56,7 +56,7 @@ stateCodes = open(path.abspath(
 values = []
 
 
-quantity = 555000
+quantity = 555
 ssnStart =100101000
 ssnEnd = ssnStart + quantity
 socialSecurityNumbers = list(range(ssnStart,ssnEnd))
@@ -65,7 +65,7 @@ print('Generating ' + str(ssnEnd - ssnStart) + " records...")
 insertBatchSize = 1000
 
 for p in person_generator.generate(socialSecurityNumbers, femaleNames, maleNames, lastNames, cityNames, streetSuffixes, stateCodes):
-    values.append("('%s', '%s', '%s', '%s', '%s', '%s', '%s','%s', %d)" % (
+    values.append("('%s', '%s', '%s', '%s', '%s', '%s', '%s','%s', %d, '%s')" % (
                   p['ssn'],
                   p['firstName'].replace("'", "''"),
                   p['lastName'].replace("'", "''"),
@@ -74,17 +74,19 @@ for p in person_generator.generate(socialSecurityNumbers, femaleNames, maleNames
                   p['city'].replace("'", "''"),
                   p['state'],
                   p['zip'],
-                  p['netWorth']))
+                  p['netWorth'],
+                  p['generated_timestamp'])
+                  )
     if (len(values) == insertBatchSize):
         print("inserting " + str(insertBatchSize ))
-        insertSql = "INSERT INTO person (ssn, first_name, last_name, sex_code, street_address, city_name, state_code, zip, net_worth_amount) VALUES" + ",".join(values)
+        insertSql = "INSERT INTO person (ssn, first_name, last_name, sex_code, street_address, city_name, state_code, zip, net_worth_amount, generated_timestamp) VALUES" + ",".join(values)
         cur.execute(insertSql)
         connection.commit()
         values.clear()
 
 if(len(values) > 0 ):
     print("inserting " + str(len(values) ))
-    insertSql = "INSERT INTO person (ssn, first_name, last_name, sex_code, street_address, city_name, state_code, zip, net_worth_amount) VALUES" + ",".join(values)
+    insertSql = "INSERT INTO person (ssn, first_name, last_name, sex_code, street_address, city_name, state_code, zip, net_worth_amount, generated_timestamp) VALUES" + ",".join(values)
     cur.execute(insertSql)
     connection.commit()
 

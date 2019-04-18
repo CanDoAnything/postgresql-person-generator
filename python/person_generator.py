@@ -1,5 +1,5 @@
 from random import randint
-
+import datetime
 
 def generate(socialSecurityNumbers, femaleFirstNames, maleFirstNames, lastNames, cityNames, streetSuffixes, stateCodes):
     people = []
@@ -43,6 +43,7 @@ def generate(socialSecurityNumbers, femaleFirstNames, maleFirstNames, lastNames,
         else:
             person['netWorth'] = randint(1000000, 10000000000)
 
+        person['generated_timestamp'] = datetime.datetime.utcnow()
         people.append(person)
 
     return people

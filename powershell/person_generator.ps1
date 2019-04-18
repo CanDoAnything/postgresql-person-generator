@@ -42,11 +42,9 @@ function generate([String[]] $socialSecurityNumbers,
             zip       = Get-Random -Minimum 10000 -Maximum 99999
             sex       = $sex
             netWorth  = $netWorth
+            generatedTimestamp = (Get-Date).ToUniversalTime().ToString("yyyy-MM-dd HH:mm:ss.ffffff")
         }
-        $people.Add($person)
-
-        
-        
+        $totalPeople =  $people.Add($person)        
     }
     return $people
 }

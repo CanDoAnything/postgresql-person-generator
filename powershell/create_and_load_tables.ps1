@@ -1,11 +1,36 @@
 # use pg driver
 
+$sysmemPath = $PSScriptRoot + '\System.Memory.dll'
+Import-module $sysmemPath
+
+$unsafePath = $PSScriptRoot + '\System.Runtime.CompilerServices.Unsafe.dll'
+Import-module $unsafePath
+
+$tasksPath = $PSScriptRoot + '\System.Threading.Tasks.Extensions.dll'
+Import-module $tasksPath
+
+$npgsqlPath = $PSScriptRoot + '\Npgsql.dll'
+Import-Module $npgsqlPath
 
 $secretsFilePath = $PSScriptRoot + "\..\secrets.json"
 $personGenInclude = $PSScriptRoot + "\person_generator.ps1"
 ."$personGenInclude"
 
 $secrets = Get-Content -Raw -Path $secretsFilePath | ConvertFrom-Json
+$cn = New-Object Npgsql.NpgsqlConnection
+$cn.ConnectionString = "Server=$($secrets.pgHost);Port=5432;Database=$($secrets.pgDatabase);User id=$($secrets.pgUsername);Password=$($secrets.pgPassword)"
+
+$cmd = New-Object Npgsql.NpgsqlCommand
+$cmd.Connection = $cn
+$cn.Open() 
+
+write-host 'Dropping tables if they exist'
+$cmd.CommandText = Get-Content ($PSScriptRoot + '\..\scripts\drop_tables.sql')
+$cmd.ExecuteNonQuery()
+
+write-host 'Creating the tables'
+$cmd.CommandText = Get-Content ($PSScriptRoot + '\..\scripts\create_tables.sql')
+$cmd.ExecuteNonQuery()
 
 $femaleNames = (Import-Csv ($PSScriptRoot + "\..\data\first_names_female.csv") -Header "Name").Name
 $maleNames = (Import-Csv ($PSScriptRoot + "\..\data\first_names_male.csv") -Header "Name").Name
@@ -14,89 +39,67 @@ $cityNames = (Import-Csv ($PSScriptRoot + "\..\data\city_names.csv") -Header "Na
 $stateCodes = (Import-Csv ($PSScriptRoot + "\..\data\state_codes.csv") -Header "Code").Code
 $streetSuffixes = (Import-Csv ($PSScriptRoot + "\..\data\street_suffixes.csv") -Header "Suffix").Suffix
 
+$quantity = 10000
 $ssnStart = 123456789
-$ssnEnd = $ssnStart + 10
+$ssnEnd = $ssnStart + $quantity - 1
 $ssns = $ssnStart..$ssnEnd | ForEach-Object { "$_" }
 
 $people = generate -socialSecurityNumbers $ssns -femaleFirstNames $femaleNames -maleFirstNames $maleNames -lastNames $lastNames -cityNames $cityNames -streetSuffixes $streetSuffixes -stateCodes $stateCodes
 
 $insertBatchSize = 1000
+$values = New-Object System.Collections.ArrayList
 
 foreach ($person in $people) {
-    Write-Host $person
-    $insertSql = "INSERT INTO person 
-    (
-        ssn, 
-        first_name, 
-        last_name, 
-        sex_code, 
-        street_address, 
-        city_name, 
-        state_code, 
-        zip, 
-        net_worth_amount
-    ) 
-        VALUES " 
+    $currentBatchSize = $values.Add("('$($person.ssn)','$($person.firstName)',
+    '$($person.lastName -replace "'", "''")',
+    '$($person.sex)',
+    '$($person.street -replace "'", "''")',
+    '$($person.city -replace "'", "''")',
+    '$($person.state)',
+    '$($person.zip)',
+    '$($person.netWorth)',
+    '$($person.generatedTimestamp)'
+    )")
+    
+    if ($currentBatchSize -eq $insertBatchSize-1) {
+        $insertSql = "INSERT INTO person 
+        (
+            ssn, 
+            first_name, 
+            last_name, 
+            sex_code, 
+            street_address, 
+            city_name, 
+            state_code, 
+            zip, 
+            net_worth_amount,
+            generated_timestamp
+        ) 
+            VALUES $($values -join ',')" 
+        $cmd.CommandText = $insertSql
+        $cmd.ExecuteNonQuery()
+        $values.clear()
     }
+}
+if ($values.Count -gt 0) {
 
 
+    $insertSql = "INSERT INTO person 
+(
+    ssn, 
+    first_name, 
+    last_name, 
+    sex_code, 
+    street_address, 
+    city_name, 
+    state_code, 
+    zip, 
+    net_worth_amount,
+    generated_timestamp
+) 
+    VALUES $($values -join ',')" 
+    $cmd.CommandText = $insertSql
+    $cmd.ExecuteNonQuery()
+}
+$cn.Close()
 
-
-# from os import path
-# import psycopg2
-
-# basepath = path.dirname(__file__)
-# try:
-
-# connection = psycopg2.connect(host=secrets['pgHost'], database=secrets['pgDatabase'],
-#                               user=secrets['pgUsername'], password=secrets['pgPassword'])
-# cur = connection.cursor()
-
-
-# print('Dropping tables if they exist')
-# dropSql = open(path.abspath(
-#     path.join(basepath, "..", "scripts", 'drop_tables.sql')))
-# cur.execute(dropSql.read())
-# connection.commit()
-
-# print('Creating the tables')
-# createSql = open(path.abspath(
-#     path.join(basepath, "..", "scripts", 'create_tables.sql')))
-# cur.execute(createSql.read())
-# connection.commit()
-
-# # seed the tables with data
-
-# # batch insert
-
-# values = []
-
-
-
-# insertBatchSize = 1000
-
-# for p in person_generator.generate(socialSecurityNumbers, femaleNames, maleNames, lastNames, cityNames, streetSuffixes, stateCodes):
-#     values.append("('%s', '%s', '%s', '%s', '%s', '%s', '%s','%s', %d)" % (
-#                   p['ssn'],
-#                   p['firstName'].replace("'", "''"),
-#                   p['lastName'].replace("'", "''"),
-#                   p['sex'],
-#                   p['street'].replace("'", "''"),
-#                   p['city'].replace("'", "''"),
-#                   p['state'],
-#                   p['zip'],
-#                   p['netWorth']))
-#     if (len(values) == insertBatchSize):
-#         print("inserting " + str(insertBatchSize ))
-#         insertSql = "INSERT INTO person (ssn, first_name, last_name, sex_code, street_address, city_name, state_code, zip, net_worth_amount) VALUES" + ",".join(values)
-#         cur.execute(insertSql)
-#         connection.commit()
-#         values.clear()
-
-# if(len(values) > 0 ):
-#     print("inserting " + str(len(values) ))
-#     insertSql = "INSERT INTO person (ssn, first_name, last_name, sex_code, street_address, city_name, state_code, zip, net_worth_amount) VALUES" + ",".join(values)
-#     cur.execute(insertSql)
-#     connection.commit()
-
-# connection.close()

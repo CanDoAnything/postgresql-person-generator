@@ -8,7 +8,8 @@ CREATE TABLE person(
   city_name VARCHAR(128),
   state_code CHAR(2),
   zip CHAR(5),
-  net_worth_amount bigint
+  net_worth_amount bigint,
+  generated_timestamp timestamp
 );
 CREATE TABLE address (
   ID INT PRIMARY KEY NOT NULL,
