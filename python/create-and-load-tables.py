@@ -1,3 +1,4 @@
+import sys
 from os import path
 
 import json
@@ -56,10 +57,10 @@ stateCodes = open(path.abspath(
 values = []
 
 
-quantity = 123456
-ssnStart =123456789
+quantity = 12345
+ssnStart = 123456789
 ssnEnd = ssnStart + quantity
-socialSecurityNumbers = list(range(ssnStart,ssnEnd))
+socialSecurityNumbers = list(range(ssnStart, ssnEnd))
 print('Generating ' + str(ssnEnd - ssnStart) + " records...")
 
 insertBatchSize = 1000
@@ -78,16 +79,30 @@ for p in person_generator.generate(socialSecurityNumbers, femaleNames, maleNames
                   p['generated_timestamp'])
                   )
     if (len(values) == insertBatchSize):
-        print("inserting " + str(insertBatchSize ))
+        print("inserting " + str(insertBatchSize))
         insertSql = "INSERT INTO person (ssn, first_name, last_name, sex_code, street_address, city_name, state_code, zip, net_worth_amount, generated_timestamp) VALUES" + ",".join(values)
         cur.execute(insertSql)
         connection.commit()
         values.clear()
 
-if(len(values) > 0 ):
-    print("inserting " + str(len(values) ))
+if(len(values) > 0):
+    print("inserting " + str(len(values)))
     insertSql = "INSERT INTO person (ssn, first_name, last_name, sex_code, street_address, city_name, state_code, zip, net_worth_amount, generated_timestamp) VALUES" + ",".join(values)
     cur.execute(insertSql)
     connection.commit()
 
+createSql = open(path.abspath(
+    path.join(basepath, "..", "scripts", 'speed_statistics.sql')))
+cur.execute(createSql.read())
+results = cur.fetchone()
+
+observationFile = open(path.abspath(
+    path.join(basepath, "..", 'observations.md')), "a")
+pythonVer = "Python %d.%d.%d" % (
+    sys.version_info.major, sys.version_info.minor, sys.version_info.micro)
+observationFile.write("|%s|%s|%s|%s|%s|\n" % (str(results[0]),
+                                              str(results[1]),
+                                              str(results[2]),
+                                              pythonVer,
+                                              str(results[3])))
 connection.close()

@@ -40,7 +40,7 @@ $stateCodes = (Import-Csv ($PSScriptRoot + "\..\data\state_codes.csv") -Header "
 $streetSuffixes = (Import-Csv ($PSScriptRoot + "\..\data\street_suffixes.csv") -Header "Suffix").Suffix
 
 
-$quantity = 123456
+$quantity = 12345
 $ssnStart = 123456789
 $ssnEnd = $ssnStart + $quantity - 1
 $ssns = $ssnStart..$ssnEnd | ForEach-Object { "$_" }
@@ -62,7 +62,7 @@ foreach ($person in $people) {
     '$($person.generatedTimestamp)'
     )")
     
-    if ($currentBatchSize -eq $insertBatchSize-1) {
+    if ($currentBatchSize -eq $insertBatchSize - 1) {
         $insertSql = "INSERT INTO person 
         (
             ssn, 
@@ -102,5 +102,14 @@ if ($values.Count -gt 0) {
     $cmd.CommandText = $insertSql
     $cmd.ExecuteNonQuery()
 }
+
+$cmd.CommandText = Get-Content ($PSScriptRoot + '\..\scripts\speed_statistics.sql')
+$reader = $cmd.ExecuteReader()
+
+$reader.read()
+
+Add-Content -Path ($PSScriptRoot + "\..\observations.md") -NoNewline -Value "|$($reader.GetDouble(0))|$($reader.GetInterval(1))|$($reader.GetInterval(2))|PowerShell|$($reader.GetString(3))|`r"
+
+
 $cn.Close()
 
