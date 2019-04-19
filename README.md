@@ -17,10 +17,7 @@ The general flow of the application is as follows:
 
 ## Findings / Observations
 
-| Language/Framework | DBMS | Sample Size | Generate speed | Insert speed|
-| ---           | ---       | ---       | --- | --- |
-| PowerShell   | PostgreSQL 11.2 |   123456 |           |
-| Python 3.7   | PostgreSQL 11.2 |   123456 |
+Take a look at the [OBSERVATIONS.md] to see a table of the performance of the various languages/frameworks.
 
 ## Prerequisites
 
