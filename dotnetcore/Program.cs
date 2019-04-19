@@ -85,15 +85,15 @@ namespace CanDoAnything
 
             int insertBatchSize = 1000;
             List<string> values = new List<string>();
-
+            Console.WriteLine("Generated");
             foreach (Person p in people)
             {
                 values.Add($"('{p.SocialSecurityNumber}','{p.FirstName.Replace("'", "''")}','{p.LastName.Replace("'", "'")}','{p.SexCode}','{p.Street.Replace("'", "''")}','{p.City.Replace("'", "''")}','{p.StateCode}','{p.Zipcode}', {p.NetWorth}, '{p.GeneratedTimestamp.ToString("yyyy-MM-dd HH:mm:ss.ffffff")}')");
-                if (values.Count == insertBatchSize - 1)
+                if (values.Count == insertBatchSize)
                 {
                     string insertSql = $@"INSERT INTO person (ssn, first_name, last_name, sex_code, street_address, city_name, state_code, zip, net_worth_amount, generated_timestamp) VALUES {String.Join(",", values)}";
                     cmd.CommandText = insertSql;
-                    cmd.ExecuteNonQuery();
+                    Console.WriteLine(cmd.ExecuteNonQuery());
                     values.Clear();
                 }
             }
@@ -101,7 +101,7 @@ namespace CanDoAnything
             {
                 string insertSql = $@"INSERT INTO person (ssn, first_name, last_name, sex_code, street_address, city_name, state_code, zip, net_worth_amount, generated_timestamp) VALUES {String.Join(",", values)}";
                 cmd.CommandText = insertSql;
-                cmd.ExecuteNonQuery();
+                Console.WriteLine(cmd.ExecuteNonQuery());
             }
 
             cmd.CommandText = System.IO.File
@@ -119,8 +119,6 @@ namespace CanDoAnything
             {
                 writer.WriteLine($"|{reader.GetDouble(0)}|{reader.GetInterval(1)}|{reader.GetInterval(2)}|{framework}|{reader.GetString(3)}|");
             }
-
-
             cn.Close();
         }
     }
