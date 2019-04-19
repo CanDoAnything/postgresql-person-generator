@@ -4,6 +4,8 @@ using Newtonsoft.Json.Linq;
 using System.Collections.Generic;
 using System.Linq;
 using System.Data;
+using System.IO;
+using System.Reflection;
 
 namespace CanDoAnything
 {
@@ -14,8 +16,6 @@ namespace CanDoAnything
             string root = System.IO.Directory.GetParent(Environment.CurrentDirectory).ToString();
             string json = System.IO.File.ReadAllText(System.IO.Path.Combine(root, "secrets.json"));
             var secrets = JObject.Parse(json);
-            Console.WriteLine(secrets);
-
 
             NpgsqlConnection cn = new NpgsqlConnection();
             cn.ConnectionString = $"Server={secrets["pgHost"]};Port=5432;Database={secrets["pgDatabase"]};User id={secrets["pgUsername"]};Password={secrets["pgPassword"]}";
@@ -65,7 +65,7 @@ namespace CanDoAnything
                     .ReadAllText(System.IO.Path.Combine(root, "data", "street_suffixes.csv"))
                     .Split(new[] { Environment.NewLine }, StringSplitOptions.None);
 
-            int quantity = 1002;
+            int quantity = 500000;
             int ssnStart = 123456789;
             int ssnEnd = ssnStart + quantity - 1;
 
@@ -107,11 +107,19 @@ namespace CanDoAnything
             cmd.CommandText = System.IO.File
             .ReadAllText(System.IO.Path
             .Combine(root, "scripts", "speed_statistics.sql"));
-            IDataReader reader = cmd.ExecuteReader();
+            NpgsqlDataReader reader = cmd.ExecuteReader();
             reader.Read();
 
+            string framework = Assembly
+                .GetEntryAssembly()?
+                .GetCustomAttribute<System.Runtime.Versioning.TargetFrameworkAttribute>()?
+                .FrameworkName;
 
-            // Add-Content -Path ($PSScriptRoot + "\..\observations.md") -NoNewline -Value "|$($reader.GetDouble(0))|$($reader.GetInterval(1))|$($reader.GetInterval(2))|PowerShell|$($reader.GetString(3))|`r"
+            using (StreamWriter writer = System.IO.File.AppendText(System.IO.Path.Combine(root, "observations.md")))
+            {
+                writer.WriteLine($"|{reader.GetDouble(0)}|{reader.GetInterval(1)}|{reader.GetInterval(2)}|{framework}|{reader.GetString(3)}|");
+            }
+
 
             cn.Close();
         }
