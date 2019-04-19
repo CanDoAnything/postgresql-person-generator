@@ -5,6 +5,13 @@
     "version": "0.2.0",
     "configurations": [
         {
+            "type": "node",
+            "request": "launch",
+            "name": "Node Program",
+            "program": "${workspaceFolder}/node/create_and_load_tables.js"
+        },
+        
+        {
             "name": "PowerShell Launch Current File",
             "type": "PowerShell",
             "request": "launch",
